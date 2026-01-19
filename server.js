@@ -13,29 +13,41 @@ function slugFromUrl(url) {
 }
 
 app.post("/fetch-blog", async (req, res) => {
-  const slug = slugFromUrl(req.body.url);
+  try {
+    const slug = slugFromUrl(req.body.url);
 
-  const r = await fetch(
-    `https://api.webflow.com/v2/collections/${process.env.WEBFLOW_COLLECTION_ID}/items`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.WEBFLOW_API_KEY}`,
-        "accept-version": "2.0.0"
+    const r = await fetch(
+      `https://api.webflow.com/v2/collections/${process.env.WEBFLOW_COLLECTION_ID}/items?limit=100`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.WEBFLOW_API_KEY}`,
+          "accept-version": "2.0.0"
+        }
       }
+    );
+
+    const data = await r.json();
+
+    if (!data.items) {
+      console.error("Bad Webflow response:", data);
+      return res.status(500).json({ error: "Invalid Webflow response" });
     }
-  );
 
-  const data = await r.json();
-  const item = data.items.find(i => i.slug === slug);
+    const item = data.items.find(i => i.slug === slug);
+    if (!item) return res.status(404).json({ error: "Blog not found" });
 
-  if (!item) return res.status(404).json({ error: "Not found" });
+    res.json({
+      itemId: item.id,
+      title: item.fieldData.name || "",
+      content: item.fieldData["post-body"] || ""
+    });
 
- res.json({
-  itemId: item.id,
-  title: item.fieldData.name,
-  content: item.fieldData["post-body"]
+  } catch (err) {
+    console.error("FETCH ERROR:", err);
+    res.status(500).json({ error: "Backend crash" });
+  }
 });
-});
+
 
 app.post("/publish", async (req, res) => {
   const { itemId, title, content } = req.body;
