@@ -35,10 +35,10 @@ app.post("/fetch-blog", async (req, res) => {
 
 
 
-    const item = data.items.find(i => i.slug === slug);
+    const item = data.items.find(i => i.fieldData.slug === slug);
         console.log(
   "Available slugs:",
-  data.items.map(i => i.slug)
+  data.items.map(i => i.fieldData.slug)
 );
 
     if (!item) return res.status(404).json({ error: "Blog not found" });
