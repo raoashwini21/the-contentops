@@ -17,7 +17,7 @@ app.post("/fetch-blog", async (req, res) => {
     const slug = slugFromUrl(req.body.url);
 
     const r = await fetch(
-      `https://api.webflow.com/v2/collections/${process.env.WEBFLOW_COLLECTION_ID}/items?limit=100`,
+      `https://api.webflow.com/v2/sites/${process.env.WEBFLOW_SITE_ID}/collections/${process.env.WEBFLOW_COLLECTION_ID}/items?limit=100`,
       {
         headers: {
           Authorization: `Bearer ${process.env.WEBFLOW_API_KEY}`,
@@ -53,7 +53,7 @@ app.post("/publish", async (req, res) => {
   const { itemId, title, content } = req.body;
 
   const r = await fetch(
-    `https://api.webflow.com/v2/collections/${process.env.WEBFLOW_COLLECTION_ID}/items/${itemId}`,
+    `/v2/sites/${SITE_ID}/collections/${COLLECTION_ID}/items/${itemId}`,
     {
       method: "PATCH",
       headers: {
