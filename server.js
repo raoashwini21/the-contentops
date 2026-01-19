@@ -33,7 +33,14 @@ app.post("/fetch-blog", async (req, res) => {
       return res.status(500).json({ error: "Invalid Webflow response" });
     }
 
+
+
     const item = data.items.find(i => i.slug === slug);
+        console.log(
+  "Available slugs:",
+  data.items.map(i => i.slug)
+);
+
     if (!item) return res.status(404).json({ error: "Blog not found" });
 
     res.json({
