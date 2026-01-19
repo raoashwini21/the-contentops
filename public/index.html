@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Webflow Blog Updater</title>
+</head>
+<body>
+  <h2>Webflow Blog Update Tool</h2>
+
+  <input id="url" placeholder="Paste blog URL" style="width:100%" />
+  <button onclick="fetchBlog()">Fetch</button>
+
+  <h3>Title</h3>
+  <input id="title" style="width:100%" />
+
+  <h3>Content</h3>
+  <textarea id="content" style="width:100%;height:250px"></textarea>
+
+  <br />
+  <button onclick="publish()">Publish</button>
+
+  <p id="status"></p>
+
+<script>
+let itemId = null;
+
+async function fetchBlog() {
+  document.getElementById("status").innerText = "Fetching...";
+  const res = await fetch("/fetch-blog", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url: document.getElementById("url").value })
+  });
+
+  const data = await res.json();
+  itemId = data.itemId;
+  document.getElementById("title").value = data.title;
+  document.getElementById("content").value = data.content;
+  document.getElementById("status").innerText = "Loaded";
+}
+
+async function publish() {
+  document.getElementById("status").innerText = "Publishing...";
+  await fetch("/publish", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      itemId,
+      title: document.getElementById("title").value,
+      content: document.getElementById("content").value
+    })
+  });
+  document.getElementById("status").innerText = "Published ✅";
+}
+</script>
+</body>
+</html>
