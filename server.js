@@ -30,11 +30,11 @@ app.post("/fetch-blog", async (req, res) => {
 
   if (!item) return res.status(404).json({ error: "Not found" });
 
-  res.json({
-    itemId: item.id,
-    title: item.fieldData.name,
-    content: item.fieldData["post-body"]
-  });
+ res.json({
+  itemId: item.id,
+  title: item.fieldData.name,
+  content: item.fieldData["post-body"]
+});
 });
 
 app.post("/publish", async (req, res) => {
